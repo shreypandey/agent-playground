@@ -10,11 +10,13 @@ dependencies = [
     "pydantic-settings>=2.4",
     "shared",
     "hn-job-agent",
+    "fit-check-agent",
 ]
 
 [tool.uv.workspace]
-members = ["shared", "hn-job-agent"]
+members = ["shared", "hn-job-agent", "fit-check-agent"]
 
 [tool.uv.sources]
 shared = { workspace = true }
 hn-job-agent = { workspace = true }
+fit-check-agent = { workspace = true }

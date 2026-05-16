@@ -16,6 +16,14 @@ wheels/
 # Per-agent state
 */state/seen_ids.json
 
+# Private fit-check profile contents
+fit-check-agent/profiles/*
+!fit-check-agent/profiles/.gitkeep
+
+# Local implementation notes
+changelog.md
+plan.md
+
 # Local Claude Code config (per-machine)
 .claude/settings.local.json
 
