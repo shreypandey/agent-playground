@@ -1,6 +1,6 @@
 # shared
 
-Cross-agent utilities for `agent_playground` workspace members. Three small modules, each pure-async and stateless (state belongs in the calling agent).
+Cross-agent utilities for `agent_playground` workspace members. Most modules are pure-async and stateless; foreground UI automation lives here only when multiple agents can reuse it.
 
 ## `shared.telegram` — `TelegramNotifier`
 
@@ -67,6 +67,29 @@ Behavior:
 - **Retries** `429` and `5xx` automatically via [tenacity](https://github.com/jd/tenacity), honoring the server's `Retry-After` header when present, otherwise exponential backoff with jitter (capped at 30 s). Default 5 attempts.
 - **Does not retry** permanent failures (`null_content`, malformed JSON, missing `choices`) — those raise `OpenRouterError` immediately so the caller can mark the item as failed instead of wasting more calls.
 - `RetryableOpenRouterError` is a subclass of `OpenRouterError`, raised only when retries are exhausted.
+
+## `shared.chatgpt_web` — `send_to_chatgpt`
+
+Foreground macOS automation for sending a prompt and optional local images to ChatGPT web using the user's existing browser login.
+
+```python
+from pathlib import Path
+
+from shared.chatgpt_web import send_to_chatgpt
+
+send_to_chatgpt(
+    "Critique this fit and suggest improvements.",
+    image_paths=[Path("~/Pictures/outfit.jpg").expanduser()],
+)
+```
+
+Manual CLI:
+
+```bash
+uv run python -m shared.chatgpt_web --image ~/Pictures/outfit.jpg "critique this fit"
+```
+
+First use requires macOS Accessibility permission for whichever app macOS names during the prompt, commonly Terminal, iTerm, Chrome, or the launcher that started the process. Images are pasted as clipboard image data, and the browser must stay focused while images and text are pasted. Submit is retried because ChatGPT can ignore Enter while image uploads are still processing.
 
 ## Adding to `shared/`
 

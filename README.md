@@ -17,15 +17,23 @@ agent_playground/
 │   └── src/shared/
 │       ├── telegram.py     async TelegramNotifier with multi-chat fan-out
 │       ├── fx.py           live FX rates from Frankfurter + LLM-prompt helpers
-│       └── openrouter.py   structured-JSON chat helper with tenacity retries
+│       ├── openrouter.py   structured-JSON chat helper with tenacity retries
+│       └── chatgpt_web.py  foreground ChatGPT web handoff helper
 │
-└── hn-job-agent/           first agent (workspace member)
-    ├── pyproject.toml      depends on `shared`
-    ├── .env                agent-specific config (gitignored)
-    ├── .env.example
-    ├── run.sh
-    ├── state/seen_ids.json runtime state (gitignored)
-    └── src/hn_job_agent/    ...
+├── hn-job-agent/           HN hiring scanner (workspace member)
+│   ├── pyproject.toml      depends on `shared`
+│   ├── .env                agent-specific config (gitignored)
+│   ├── .env.example
+│   ├── run.sh
+│   ├── state/seen_ids.json runtime state (gitignored)
+│   └── src/hn_job_agent/    ...
+│
+├── fit-check-agent/        Chrome Native Messaging host for local profile fit checks
+│   ├── profiles/           private profile directories (gitignored except .gitkeep)
+│   ├── native-host.sh      executable used by Chrome Native Messaging
+│   └── src/fit_check_agent/
+│
+└── fit-check-extension/    unpacked Chrome MV3 extension
 ```
 
 ## Conventions
@@ -42,7 +50,68 @@ agent_playground/
 
 A run drains `pending` first (no LLM cost — just retried sends), then classifies anything not in either set. This means a delivery failure (wrong chat ID, Telegram outage, per-run cap) never wastes the OpenRouter call that produced the match.
 
-## Quickstart
+## Fit Check Quickstart
+
+Use this path if you want the browser extension that sends the current product
+page plus a local body/profile bundle to ChatGPT web.
+
+Prerequisites:
+- macOS. The ChatGPT handoff uses `open`, `pbcopy`, `osascript`, and `sips`.
+- Chrome or a Chromium browser with Native Messaging support.
+- [`uv`](https://docs.astral.sh/uv/) and Python 3.12 or newer.
+- A working ChatGPT web login in the default browser.
+- An OpenRouter key if you want LLM cleanup of noisy product text. Without it,
+  the fit-check agent still runs with deterministic cleanup.
+
+```bash
+git clone https://github.com/shreypandey/agent-playground.git
+cd agent-playground
+uv sync
+cp .env.example .env                              # fill OPENROUTER_API_KEY if using LLM cleanup
+
+mkdir -p fit-check-agent/profiles/demo
+cat > fit-check-agent/profiles/demo/measurements.md <<'EOF'
+# Measurements
+Height:
+Chest:
+Waist:
+Hip:
+Shoulder:
+Sleeve:
+
+# Fit preferences
+Usual top size:
+Preferred fit:
+Avoid:
+EOF
+
+# Add at least one profile photo to fit-check-agent/profiles/demo/
+```
+
+Then:
+
+1. Open `chrome://extensions`.
+2. Enable Developer mode.
+3. Click **Load unpacked** and select `fit-check-extension/`.
+4. Copy the generated extension ID.
+5. Install the native host:
+
+```bash
+cd fit-check-agent
+cp .env.example .env
+./install-native-host.sh <chrome-extension-id>
+uv run fit-check list-profiles
+```
+
+Open a product page, click the Fit Check extension, select a profile, and click
+**Analyze Outfit**. Keep the browser focused while ChatGPT opens and the agent
+pastes profile/product images and the prompt.
+
+See [`fit-check-agent`](./fit-check-agent/README.md) and
+[`fit-check-extension`](./fit-check-extension/README.md) for details and
+troubleshooting.
+
+## HN Job Agent Quickstart
 
 ```bash
 git clone https://github.com/shreypandey/agent-playground.git
@@ -65,3 +134,4 @@ cd hn-job-agent && cp .env.example .env           # fill TELEGRAM_BOT_TOKEN, TEL
 ## Agents
 
 - [`hn-job-agent`](./hn-job-agent/README.md) — surfaces matching jobs from HN's monthly "Who is hiring?" thread to Telegram.
+- [`fit-check-agent`](./fit-check-agent/README.md) + [`fit-check-extension`](./fit-check-extension/) — sends product pages and local profile bundles to ChatGPT web for visual fit checks.
