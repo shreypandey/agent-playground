@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fit Check</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="title">
+          <span class="logo" aria-hidden="true">F</span>
+          <h1>Fit Check</h1>
+        </div>
+        <button id="refreshProfiles" type="button" title="Refresh profiles" aria-label="Refresh profiles">↻</button>
+      </header>
+
+      <div class="field">
+        <label for="profileSelect">Profile</label>
+        <select id="profileSelect">
+          <option value="">Loading profiles...</option>
+        </select>
+      </div>
+
+      <button id="sendButton" type="button">
+        <span class="button-spinner" aria-hidden="true"></span>
+        <span id="sendButtonLabel">Analyze Outfit</span>
+      </button>
+
+      <div id="progress" class="progress" hidden>
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="progressText">Working...</span>
+      </div>
+
+      <section id="summary" hidden></section>
+      <p id="status" role="status"></p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

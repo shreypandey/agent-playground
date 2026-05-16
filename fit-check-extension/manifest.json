@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Fit Check Agent",
+  "description": "Send the current product page and a local profile bundle to ChatGPT web.",
+  "version": "0.1.0",
+  "permissions": ["activeTab", "scripting", "storage", "nativeMessaging"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Fit Check"
+  }
+}
