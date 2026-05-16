@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environment
+.venv/
+
+# Secrets
+.env
+*/.env
+
+# Per-agent state
+*/state/seen_ids.json
+
+# Local Claude Code config (per-machine)
+.claude/settings.local.json
+
+# macOS
+.DS_Store

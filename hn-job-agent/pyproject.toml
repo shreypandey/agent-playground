@@ -1,0 +1,18 @@
+[project]
+name = "hn-job-agent"
+version = "0.1.0"
+description = "Scan HN 'Who is hiring?' for ML / FDE / LLM-agent roles ≥ 50 LPA INR and push matches to Telegram."
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.27",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.4",
+    "shared",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hn_job_agent"]
